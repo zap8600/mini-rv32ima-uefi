@@ -10,16 +10,16 @@ int fail_on_all_faults = 0;
 
 static int64_t SimpleReadNumberInt( const char * number, int64_t defaultNumber );
 static uint64_t GetTimeMicroseconds();
-static void ResetKeyboardInput();
-static void CaptureKeyboardInput();
+//static void ResetKeyboardInput();
+//static void CaptureKeyboardInput();
 static uint32_t HandleException( uint32_t ir, uint32_t retval );
 static uint32_t HandleControlStore( uint32_t addy, uint32_t val );
 static uint32_t HandleControlLoad( uint32_t addy );
 static void HandleOtherCSRWrite( uint8_t * image, uint16_t csrno, uint32_t value );
 static int32_t HandleOtherCSRRead( uint8_t * image, uint16_t csrno );
 static void MiniSleep();
-static int IsKBHit();
-static int ReadKBByte();
+//static int IsKBHit();
+//static int ReadKBByte();
 
 // This is the functionality we want to override in the emulator.
 //  think of this as the way the emulator's processor is connected to the outside world.
@@ -230,6 +230,7 @@ static void CtrlC()
 	exit( 0 );
 }
 
+/*
 // Override keyboard, so we can capture all keyboard input for the VM.
 static void CaptureKeyboardInput()
 {
@@ -251,6 +252,7 @@ static void ResetKeyboardInput()
 	term.c_lflag |= ICANON | ECHO;
 	tcsetattr(0, TCSANOW, &term);
 }
+*/
 
 static void MiniSleep()
 {
@@ -259,12 +261,18 @@ static void MiniSleep()
 
 static uint64_t GetTimeMicroseconds()
 {
+	/*
 	struct timeval tv;
 	gettimeofday( &tv, 0 );
 	return tv.tv_usec + ((uint64_t)(tv.tv_sec)) * 1000000LL;
+	*/
+	time_t result = time(NULL);
+	return ((uint64_t)result) * 1000000LL;
 }
 
 static int is_eofd;
+
+/*
 
 static int ReadKBByte()
 {
@@ -286,6 +294,8 @@ static int IsKBHit()
 	if( !byteswaiting && write( fileno(stdin), 0, 0 ) != 0 ) { is_eofd = 1; return -1; } // Is end-of-file for 
 	return !!byteswaiting;
 }
+
+*/
 
 
 #endif
@@ -319,10 +329,13 @@ static uint32_t HandleControlStore( uint32_t addy, uint32_t val )
 static uint32_t HandleControlLoad( uint32_t addy )
 {
 	// Emulating a 8250 / 16550 UART
+	// fuck it, why not see if it works
 	if( addy == 0x10000005 )
-		return 0x60 | IsKBHit();
+		return 0x60 | 0; // return 0x60 | IsKBHit();
+	/*not needed, no UART input yet
 	else if( addy == 0x10000000 && IsKBHit() )
 		return ReadKBByte();
+	*/
 	return 0;
 }
 
@@ -361,8 +374,8 @@ static int32_t HandleOtherCSRRead( uint8_t * image, uint16_t csrno )
 {
 	if( csrno == 0x140 )
 	{
-		if( !IsKBHit() ) return -1;
-		return ReadKBByte();
+		return -1; // if( !IsKBHit() ) 
+		// return ReadKBByte();
 	}
 	return 0;
 }
