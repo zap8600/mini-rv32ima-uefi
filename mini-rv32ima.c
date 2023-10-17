@@ -1,10 +1,6 @@
 // Copyright 2022 Charles Lohr, you may use this file or any portions herein under any of the BSD, MIT, or CC0 licenses.
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <uefi.h>
 
 #include "default64mbdtc.h"
 
@@ -95,7 +91,7 @@ int main( int argc, char ** argv )
 	}
 	if( show_help || image_file_name == 0 || time_divisor <= 0 )
 	{
-		fprintf( stderr, "./mini-rv32imaf [parameters]\n\t-m [ram amount]\n\t-f [running image]\n\t-k [kernel command line]\n\t-b [dtb file, or 'disable']\n\t-c instruction count\n\t-s single step with full processor state\n\t-t time divion base\n\t-l lock time base to instruction count\n\t-p disable sleep when wfi\n\t-d fail out immediately on all faults\n" );
+		fprintf( stderr, "./mini-rv32ima [parameters]\n\t-m [ram amount]\n\t-f [running image]\n\t-k [kernel command line]\n\t-b [dtb file, or 'disable']\n\t-c instruction count\n\t-s single step with full processor state\n\t-t time divion base\n\t-l lock time base to instruction count\n\t-p disable sleep when wfi\n\t-d fail out immediately on all faults\n" );
 		return 1;
 	}
 
@@ -169,7 +165,8 @@ restart:
 		}
 	}
 
-	CaptureKeyboardInput();
+	// no use as of now, POSIX-UEFI doesn't support reading directly from stdin
+	// CaptureKeyboardInput();
 
 	// The core lives at the end of RAM.
 	core = (struct MiniRV32IMAState *)(ram_image + ram_amt - sizeof( struct MiniRV32IMAState ));
