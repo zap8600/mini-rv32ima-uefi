@@ -93,14 +93,14 @@ int main( int argc, char ** argv )
 	}
 	if( show_help || image_file_name == 0 || time_divisor <= 0 )
 	{
-		fprintf( stderr, "./mini-rv32ima [parameters]\n\t-m [ram amount]\n\t-f [running image]\n\t-k [kernel command line]\n\t-b [dtb file, or 'disable']\n\t-c instruction count\n\t-s single step with full processor state\n\t-t time divion base\n\t-l lock time base to instruction count\n\t-p disable sleep when wfi\n\t-d fail out immediately on all faults\n" );
+		printf("./mini-rv32ima [parameters]\n\t-m [ram amount]\n\t-f [running image]\n\t-k [kernel command line]\n\t-b [dtb file, or 'disable']\n\t-c instruction count\n\t-s single step with full processor state\n\t-t time divion base\n\t-l lock time base to instruction count\n\t-p disable sleep when wfi\n\t-d fail out immediately on all faults\n" );
 		return 1;
 	}
 
 	ram_image = malloc( ram_amt );
 	if( !ram_image )
 	{
-		fprintf( stderr, "Error: could not allocate system image.\n" );
+		printf("Error: could not allocate system image.\n" );
 		return -4;
 	}
 
@@ -109,7 +109,7 @@ restart:
 		FILE * f = fopen( image_file_name, "rb" );
 		if( !f )
 		{
-			fprintf( stderr, "Error: \"%s\" not found\n", image_file_name );
+			printf("Error: \"%s\" not found\n", image_file_name );
 			return -5;
 		}
 		fseek( f, 0, SEEK_END );
@@ -117,14 +117,14 @@ restart:
 		fseek( f, 0, SEEK_SET );
 		if( flen > ram_amt )
 		{
-			fprintf( stderr, "Error: Could not fit RAM image (%ld bytes) into %d\n", flen, ram_amt );
+			printf("Error: Could not fit RAM image (%ld bytes) into %d\n", flen, ram_amt );
 			return -6;
 		}
 
 		memset( ram_image, 0, ram_amt );
 		if( fread( ram_image, flen, 1, f ) != 1)
 		{
-			fprintf( stderr, "Error: Could not load image.\n" );
+			printf("Error: Could not load image.\n" );
 			return -7;
 		}
 		fclose( f );
@@ -140,7 +140,7 @@ restart:
 				f = fopen( dtb_file_name, "rb" );
 				if( !f )
 				{
-					fprintf( stderr, "Error: \"%s\" not found\n", dtb_file_name );
+					printf("Error: \"%s\" not found\n", dtb_file_name );
 					return -5;
 				}
 				fseek( f, 0, SEEK_END );
@@ -149,7 +149,7 @@ restart:
 				dtb_ptr = ram_amt - dtblen - sizeof( struct MiniRV32IMAState );
 				if( fread( ram_image + dtb_ptr, dtblen, 1, f ) != 1 )
 				{
-					fprintf( stderr, "Error: Could not open dtb \"%s\"\n", dtb_file_name );
+					printf("Error: Could not open dtb \"%s\"\n", dtb_file_name );
 					return -9;
 				}
 				fclose( f );
