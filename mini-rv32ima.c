@@ -74,7 +74,7 @@ int main( int argc, char ** argv )
 				case 'p': param_continue = 1; do_sleep = 0; break;
 				case 's': param_continue = 1; single_step = 1; break;
 				case 'd': param_continue = 1; fail_on_all_faults = 1; break; 
-				case 't': if( ++i < argc ) time_divisor = 1 break; SimpleReadNumberInt( argv[i], 1 );
+				case 't': if( ++i < argc ) time_divisor = 1; break; /*SimpleReadNumberInt( argv[i], 1 );*/
 				default:
 					if( param_continue )
 						param_continue = 0;
