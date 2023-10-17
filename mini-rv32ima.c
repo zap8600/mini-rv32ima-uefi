@@ -4,11 +4,13 @@
 
 #include "default64mbdtc.h"
 
+#define INT32_MIN        (-2147483647-1)
+
 // Just default RAM amount is 64MB.
 uint32_t ram_amt = 64*1024*1024;
 int fail_on_all_faults = 0;
 
-static int64_t SimpleReadNumberInt( const char * number, int64_t defaultNumber );
+//static int64_t SimpleReadNumberInt( const char * number, int64_t defaultNumber );
 static uint64_t GetTimeMicroseconds();
 //static void ResetKeyboardInput();
 //static void CaptureKeyboardInput();
@@ -63,8 +65,8 @@ int main( int argc, char ** argv )
 			{
 				switch( param[1] )
 				{
-				case 'm': if( ++i < argc ) ram_amt = SimpleReadNumberInt( argv[i], ram_amt ); break;
-				case 'c': if( ++i < argc ) instct = SimpleReadNumberInt( argv[i], -1 ); break;
+				case 'm': if( ++i < argc ) ram_amt = ram_amt; break; /*SimpleReadNumberInt( argv[i], ram_amt );*/
+				case 'c': if( ++i < argc ) instct = -1; break; /*SimpleReadNumberInt( argv[i], -1 );*/
 				case 'k': if( ++i < argc ) kernel_command_line = argv[i]; break;
 				case 'f': image_file_name = (++i<argc)?argv[i]:0; break;
 				case 'b': dtb_file_name = (++i<argc)?argv[i]:0; break;
@@ -72,7 +74,7 @@ int main( int argc, char ** argv )
 				case 'p': param_continue = 1; do_sleep = 0; break;
 				case 's': param_continue = 1; single_step = 1; break;
 				case 'd': param_continue = 1; fail_on_all_faults = 1; break; 
-				case 't': if( ++i < argc ) time_divisor = SimpleReadNumberInt( argv[i], 1 ); break;
+				case 't': if( ++i < argc ) time_divisor = 1 break; SimpleReadNumberInt( argv[i], 1 );
 				default:
 					if( param_continue )
 						param_continue = 0;
@@ -105,7 +107,7 @@ int main( int argc, char ** argv )
 restart:
 	{
 		FILE * f = fopen( image_file_name, "rb" );
-		if( !f || ferror( f ) )
+		if( !f )
 		{
 			fprintf( stderr, "Error: \"%s\" not found\n", image_file_name );
 			return -5;
@@ -136,7 +138,7 @@ restart:
 			else
 			{
 				f = fopen( dtb_file_name, "rb" );
-				if( !f || ferror( f ) )
+				if( !f )
 				{
 					fprintf( stderr, "Error: \"%s\" not found\n", dtb_file_name );
 					return -5;
@@ -297,10 +299,6 @@ static int IsKBHit()
 
 */
 
-
-#endif
-
-
 //////////////////////////////////////////////////////////////////////////
 // Rest of functions functionality
 //////////////////////////////////////////////////////////////////////////
@@ -380,6 +378,7 @@ static int32_t HandleOtherCSRRead( uint8_t * image, uint16_t csrno )
 	return 0;
 }
 
+/*
 static int64_t SimpleReadNumberInt( const char * number, int64_t defaultNumber )
 {
 	if( !number || !number[0] ) return defaultNumber;
@@ -404,6 +403,7 @@ static int64_t SimpleReadNumberInt( const char * number, int64_t defaultNumber )
 		return ret;
 	}
 }
+*/
 
 static void DumpState( struct MiniRV32IMAState * core, uint8_t * ram_image )
 {
